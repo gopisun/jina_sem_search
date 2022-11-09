@@ -1,0 +1,27 @@
+# Ignore Mac system files
+.DS_store
+
+# Ignore node_modules folder.  Not applicable for this project
+node_modules
+
+# Ignore all text files
+*.txt
+
+# Ignore files related to API keys   - not aplicable for this
+.env
+
+# Ignore SASS config files - not applicable for htis
+.sass-cache
+
+# ignore the index repositories
+wspace*
+
+# ignore logfiles
+output
+
+# ignore the experiment
+experiment
+
+# ignore data
+data
+
