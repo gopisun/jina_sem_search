@@ -28,10 +28,11 @@ class ChunkMerger(Executor):
     def merge_chunks(self, docs, **kwargs):
         for doc in docs:  # level 0 document
             for chunk in doc.chunks:
-                if doc.text:   
-                    docs.pop(chunk.id)  # this logic does not seem right.  docs does not have chuck.id as its array element
-                                        # The original level 1 chunks - paras and pages, are not getting deleted due to this.
-                                        # ChunkMerger2 is created to address this.
+                if doc.text:
+                    # this logic does not seem right.  docs does not have chuck.id as its array element
+                    docs.pop(chunk.id)
+                    # The original level 1 chunks - paras and pages, are not getting deleted due to this.
+                    # ChunkMerger2 is created to address this.
             doc.chunks = doc.chunks[...]
 
 
@@ -168,7 +169,6 @@ class Gpt3Encoder(Executor):
         # MODEL = "text-search-babbage-doc-001"
         MODEL = "text-search-davinci-doc-001"
 
-
         for doc in docs:
             for chunk in doc.chunks:
                 docTextArray.append(chunk.text)
@@ -178,9 +178,9 @@ class Gpt3Encoder(Executor):
             # encode the text array
             res = openai.Embedding.create(
                 input=docTextArray, engine=MODEL)
-            
+
             embeds = [record['embedding'] for record in res['data']]
-            
+
             # update the embedding in docs
             counter = 0
             for chunk in doc.chunks:
@@ -191,14 +191,12 @@ class Gpt3Encoder(Executor):
             docTextArray = []
 
 
-
-
 class Gpt3Encoder_search(Executor):
     @requests(on='/search')
     def encodeGpt3_search(self, docs, **kwargs):
         print("entering Gpt3Encoder_search")
 
-        #MODEL = "text-search-davinci-query-001"
+        # MODEL = "text-search-davinci-query-001"
         MODEL = "text-search-babbage-query-001"
 
         print("Docs summary at the beginning")
@@ -213,7 +211,32 @@ class Gpt3Encoder_search(Executor):
             input=docs[0].text, engine=MODEL)
 
         # extract embeddings from res
-        #embeds = [record['embedding'] for record in res['data']]
+        # embeds = [record['embedding'] for record in res['data']]
         embed = res['data'][0]['embedding']
-        #print("embed is:", embed)
+        # print("embed is:", embed)
         docs[0].embedding = np.array(embed)
+
+
+CHUNK_SIZE_LIMIT = 1000  # number of  chars in the chunk
+
+
+class MergeChunks(Executor):
+    @requests(on='/index')
+    def mergeChunks(self, docs, **kwargs):
+        for doc in docs:
+            chunks_size = len(doc.chunks)
+            mask = [False] * chunks_size
+            i = 0
+            while (i < chunks_size):
+                j = i
+                mask[i] = False
+                while (len(doc.chunks[j].text) < CHUNK_SIZE_LIMIT):
+                    i += 1
+                    if (i < chunks_size):
+                        doc.chunks[j].text += doc.chunks[i].text
+                        mask[i] = True
+                    else:
+                        break
+                i += 1
+            del doc.chunks[mask]
+                
