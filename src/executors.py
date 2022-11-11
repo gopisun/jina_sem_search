@@ -217,7 +217,7 @@ class Gpt3Encoder_search(Executor):
         docs[0].embedding = np.array(embed)
 
 
-CHUNK_SIZE_LIMIT = 1000  # number of  chars in the chunk
+CHUNK_SIZE_LIMIT = 200  # number of  chars in the chunk
 
 
 class MergeChunks(Executor):

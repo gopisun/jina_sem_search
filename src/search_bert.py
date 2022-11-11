@@ -4,6 +4,11 @@ from jina import Flow
 #import pandas as pd
 #import numpy as np
 
+# transformer lists:
+modelName = 'sentence-transformers/multi-qa-mpnet-base-cos-v1'
+#wspaceName = 'wspace_qa_mpnet_base_dot_v1'
+wspaceName = 'wspace_qa_mpnet_base_cos_v1'
+
 
 def main():
 
@@ -15,14 +20,18 @@ def main():
             name="cu113Encoder2",
             uses_with={
               #  "traversal_paths": "@c", 
-                "pretrained_model_name_or_path": "bert-base-uncased"},  # non default used instead of defaul mpnet
+               # "pretrained_model_name_or_path": "bert-base-uncased"},  # non default used instead of defaul mpnet
              #   "pretrained_model_name_or_path": "nlpaueb/bert-base-uncased-contracts"},  # non default used instead of defaul mpnet
+                "pretrained_model_name_or_path": modelName,  # non default used instead of defaul mpnet
+            }
         )
         .add(
             uses="jinahub://SimpleIndexer/latest",
             install_requirements=True,
             name="indexer",
-            uses_metas={'workspace': 'wspace_cu113_contract_bert'},
+            # uses_metas={'workspace': 'wspace_cu113_contract_bert'},
+            workspace= wspaceName,
+            #uses_metas={'workspace': 'wspace_cu113_wiki_bert'},
             uses_with={
                         "traversal_right": "@c",
                         'traversal_left': '@r', 

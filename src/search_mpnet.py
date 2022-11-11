@@ -18,7 +18,8 @@ def main():
             uses="jinahub://SimpleIndexer/latest",
             install_requirements=True,
             name="indexer",
-            uses_metas={'workspace': 'wspace_cu113_contract_mptext'},
+            # uses_metas={'workspace': 'wspace_cu113_contract_mptext'},
+            uses_metas={'workspace': 'wspace_cu113_wiki_mptext'},
             uses_with={"traversal_right": "@c",
                        'traversal_left': '@r', 'table_name': 'encoded_chunks'},
         )

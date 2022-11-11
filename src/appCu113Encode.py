@@ -3,6 +3,11 @@ from jina import Flow
 from executors import ChunkMerger2, ImageNormalizer, EmbeddingChecker, MergeChunks
 
 
+# transformer lists:
+modelName = 'sentence-transformers/multi-qa-mpnet-base-cos-v1'
+#wspaceName = 'wspace_qa_mpnet_base_dot_v1'
+wspaceName = 'wspace_qa_mpnet_base_cos_v1'
+
 docs = DocumentArray.from_files("../data/wiki/*.pdf", recursive=True)
 #docs = DocumentArray.from_files("../data/contracts/*.pdf", recursive=True)
 
@@ -21,8 +26,10 @@ flow = (Flow()
             name="cu113Encoder",
             uses_with={
                 "traversal_paths": "@c", 
-             #   "pretrained_model_name_or_path": "bert-base-uncased"},  # non default used instead of defaul mpnet
-            #  "pretrained_model_name_or_path": "nlpaueb/bert-base-uncased-contracts",  # non default used instead of defaul mpnet
+                #"pretrained_model_name_or_path": "bert-base-uncased",  # non default used instead of defaul mpnet
+                #"pretrained_model_name_or_path": "nlpaueb/bert-base-uncased-contracts",  # non default used instead of defaul mpnet
+                #"pretrained_model_name_or_path": 'sentence-transformers/multi-qa-mpnet-base-dot-v1',  # non default used instead of defaul mpnet
+                "pretrained_model_name_or_path": modelName,  # non default used instead of defaul mpnet
             }
             
 )
@@ -32,9 +39,12 @@ flow = (Flow()
         uses="jinahub://SimpleIndexer/latest",
         install_requirements=True,
         name="indexer",
-        workspace="wspace_cu113_wiki_mptext",
+        #workspace="wspace_cu113_wiki_mptext",
         #workspace="wspace_cu113_contract_bertLegal",
+        #workspace="wspace_cu113_wiki_bertLegal",
+        workspace= wspaceName,
         #uses_metas={'workspace': 'wspace_cu113_contract_bert'},
+        #uses_metas={'workspace': 'wspace_cu113_wiki_bert'},
         uses_with={"traversal_right": "@c",
                    'table_name': 'encoded_chunks'}
 )
